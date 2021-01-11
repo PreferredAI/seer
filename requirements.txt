@@ -1,0 +1,9 @@
+tqdm
+pandas
+scipy
+matplotlib
+cornac
+nltk
+sklearn
+chainer==6.3.0
+docplex
