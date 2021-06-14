@@ -1,10 +1,12 @@
-"""This class read EFM model files exported from EFM models from cornac
+"""This class read EFM model files
 """
 
-from util import load_dict
 import os
-import numpy as np
 import warnings
+
+import numpy as np
+
+from util import load_dict
 
 
 class EFMReader:

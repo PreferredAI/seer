@@ -1,10 +1,13 @@
-from defs import Toks
+import math
+
+import chainer
+import chainer.initializers as I
+from chainer import Variable
 from chainer import functions as F
 from chainer import links as L
-from chainer import reporter, Variable
-import chainer.initializers as I
-import chainer
-import math
+from chainer import reporter
+
+from defs import Toks
 
 
 class Context2Vec(chainer.Chain):

@@ -1,12 +1,14 @@
-from util import load_dict, load_json
-from defs import SOURCE_ASPECT_SCORE, NEGATIVE_SAMPLING_NUM, IN_TO_OUT_UNITS_RATIO
-from nn import (Context2Vec, AspectSentiContext2Vec)
-from chainer.backends import cuda
 import os
-import numpy as np
-import chainer
-import chainer.serializers as S
+
 import chainer.links as L
+import chainer.serializers as S
+import numpy as np
+from chainer.backends import cuda
+
+from defs import (IN_TO_OUT_UNITS_RATIO, NEGATIVE_SAMPLING_NUM,
+                  SOURCE_ASPECT_SCORE)
+from nn import AspectSentiContext2Vec, Context2Vec
+from util import load_dict, load_json
 
 
 class ModelReader():

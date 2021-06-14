@@ -1,10 +1,12 @@
 import argparse
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from model_reader import ModelReader
-from util import to_one_hot, substitute_word
+
 from efm import EFMReader
+from model_reader import ModelReader
+from util import substitute_word, to_one_hot
 
 
 def parse_arguments():

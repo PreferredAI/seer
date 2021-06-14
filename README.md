@@ -69,7 +69,7 @@ python seer.py --input A10L9NQO44OLOU,B0044T2KBU,toy,toy --corpus_path data/toy/
 
 The above command generates an explanation for user `A10L9NQO44OLOU`, item `B0044T2KBU`, and the demanded aspects are `toy,toy` (2 sentences about aspect `toy`). This example is taken from the test dataset.
 
-By default, we run SEER with greedy algorithm. SEER-ILP is provided and [IBM ILOG CPLEX Optimization Studio](https://www.ibm.com/sg-en/products/ilog-cplex-optimization-studio) must be ready to be able to proceed further. After setting up CPLEX, you can try SEER-ILP with argument `--strategy mip-efm` instead of `--strategy greedy-seer`.
+By default, we run SEER with greedy algorithm. SEER-ILP is provided and [IBM ILOG CPLEX Optimization Studio](https://www.ibm.com/sg-en/products/ilog-cplex-optimization-studio) must be ready to be able to proceed further. After setting up CPLEX, you can try SEER-ILP with argument `--strategy ilp-efm` instead of `--strategy greedy-efm`.
 
 To run the framework with other data, please modify the arguments accordingly.
 

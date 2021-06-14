@@ -12,8 +12,8 @@ FacilityTypeDemand = namedtuple(
     'facilityTypeDemand', ('type', 'demand', 'extra'))
 
 
-def solve_uflp_ext(companies, facilities, customers, facilityDemands, costs, alpha=0.5, log_verbose='Quiet'):
-    assert alpha >= 0 and alpha <= 1  # ensure trace-off factor is between 0 and 1
+def solve_seer_ilp(companies, facilities, customers, facilityDemands, costs, alpha=1, log_verbose='Quiet'):
+    assert alpha >= 0  # ensure trace-off factor is >= 0, which show the contribution of representative cost
     assert log_verbose in ['Quiet', 'Terse', 'Normal', 'Verbose']
     n_company = len(companies)
     n_facility = len(facilities)
@@ -59,9 +59,9 @@ def solve_uflp_ext(companies, facilities, customers, facilityDemands, costs, alp
 
     # Objective
     total_cost = mdl.scal_prod(
-        openCompany, [alpha * c.cost for c in companies])
+        openCompany, [c.cost for c in companies])
     for i in range(n_customer):
-        total_cost += mdl.element(customerSupplier[i], (1 - alpha) * costs[i])
+        total_cost += mdl.element(customerSupplier[i], alpha * costs[i])
     mdl.add(mdl.minimize(total_cost))
 
     # -----------------------------------------------------------------------------
@@ -138,8 +138,8 @@ def main():
         [1, 1, 1, 1, 1, 1, 1, 0.02]
     ])
 
-    solution, selectedFacilities, selectedCompanies = solve_uflp_ext(
-        companies, facilities, customers, facilityDemands, costs)
+    solution, selectedFacilities, selectedCompanies = solve_seer_ilp(
+        companies, facilities, customers, facilityDemands, costs, alpha=10)
     print(selectedCompanies, selectedFacilities)
 
 

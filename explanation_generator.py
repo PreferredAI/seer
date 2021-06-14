@@ -1,10 +1,9 @@
 import time
-import numpy as np
-from itertools import combinations
 from collections import namedtuple
 
-from sklearn.metrics.pairwise import cosine_similarity
-from uflp_ext import Company, Customer, Facility, FacilityTypeDemand, solve_uflp_ext
+import numpy as np
+
+from seer_ilp import Company, Customer, Facility, FacilityTypeDemand, solve_seer_ilp
 
 Sentence = namedtuple("Sentence", ("name", "review", "aspect", "text"))
 Review = namedtuple("Review", ("name", "reviewer", "cost"))
@@ -20,7 +19,7 @@ class ExplanationGenerator:
         if self.verbose:
             print("Init %s" % self.__class__.__name__)
 
-    def generate(self, user, item, demand, candidates):
+    def generate(self, user=None, item=None, demand=None, candidates=None):
         raise NotImplementedError
 
 
@@ -33,7 +32,8 @@ class TextRankSentenceSelector(SentenceSelector):
     def __init__(self, verbose=False):
         super().__init__(verbose)
 
-    def generate(self, user, item, demand, candidates):
+    def generate(self, demand, candidates):
+        from summa import summarizer
         result = {"demand": demand, "candidates": candidates}
         if len(candidates) > 0:
             cur_time = time.time()
@@ -63,18 +63,18 @@ class TextRankSentenceSelector(SentenceSelector):
         return result
 
 
-class MIPSentenceSelector(SentenceSelector):
+class ILPSentenceSelector(SentenceSelector):
     def __init__(
         self,
         coherence_manager,
         sentence_pair_model,
-        alpha=0.5,
-        strategy="mip-efm",
+        alpha=1.0,
+        strategy="ilp-efm",
         verbose=False,
     ):
         super().__init__(verbose)
-        if alpha > 1 or alpha < 0:
-            raise ValueError("alpha must be in the range of [0.0, 1.0]")
+        if alpha < 0:
+            raise ValueError("alpha must be >= 0")
         self.alpha = alpha
         self.coherence_manager = coherence_manager
         self.sentence_pair_model = sentence_pair_model
@@ -134,7 +134,7 @@ class MIPSentenceSelector(SentenceSelector):
                 facilityDemands,
             ) = self._preprocessing(user, item, candidates, demand)
             log_verbose = "Normal" if self.verbose else "Quiet"
-            solution, selectedFacilities, selectedCompanies = solve_uflp_ext(
+            solution, selectedFacilities, selectedCompanies = solve_seer_ilp(
                 companies,
                 facilities,
                 customers,
@@ -171,70 +171,7 @@ class MIPSentenceSelector(SentenceSelector):
         return result
 
 
-class MIPNoAspectSentenceSelector(MIPSentenceSelector):
-    def generate(self, user, item, demand, candidates):
-        result = {"demand": demand, "candidates": candidates}
-        if len(candidates) > 0:
-            companies, facilities, customers, costs, _ = self._preprocessing(
-                user, item, candidates, demand
-            )
-            singleTypeFacilities = facilities.copy()
-            totalDemand = sum(demand.values())
-            singleTypeDemand = [FacilityTypeDemand(DUMMY_ASPECT, totalDemand, None)]
-            for i in range(len(facilities)):
-                singleTypeFacilities[i] = Facility(
-                    facilities[i].name,
-                    DUMMY_ASPECT,
-                    facilities[i].company,
-                    facilities[i].content,
-                    facilities[i].extra,
-                )
-                customers[i] = Customer(
-                    customers[i].name,
-                    DUMMY_ASPECT,
-                    customers[i].company,
-                    customers[i].content,
-                    customers[i].extra,
-                )
-            log_verbose = "Normal" if self.verbose else "Quiet"
-            solution, selectedFacilities, selectedCompanies = solve_uflp_ext(
-                companies,
-                facilities,
-                customers,
-                facilityDemands,
-                costs,
-                self.alpha,
-                log_verbose,
-            )
-
-            result["selected_aspects"] = [
-                facilities[i].type for i in selectedFacilities
-            ]
-            result["objective_value"] = (
-                solution.get_objective_values()[0]
-                if solution.get_objective_values() is not None
-                else None
-            )
-            result["objective_bound"] = (
-                solution.get_objective_bounds()[0]
-                if solution.get_objective_bounds() is not None
-                else None
-            )
-            result["objective_gap"] = (
-                solution.get_objective_gaps()[0]
-                if solution.get_objective_gaps() is not None
-                else None
-            )
-            result["selected_sentences"] = [
-                facilities[i].content for i in selectedFacilities
-            ]
-            result["selected_reviews"] = [companies[i].name for i in selectedCompanies]
-            result["solve_time"] = solution.get_solve_time()
-
-        return result
-
-
-class GreedySentenceSelector(MIPSentenceSelector):
+class GreedySentenceSelector(ILPSentenceSelector):
     def __init__(
         self,
         coherence_manager,
@@ -526,8 +463,3 @@ class GreedySentenceSelector(MIPSentenceSelector):
             result["solve_time"] = solution.get("solve_time")
             result["objective_value"] = solution.get("objective_value")
         return result
-
-
-class GreedyNoAspectSentenceSelector(GreedySentenceSelector):
-    def generate(self, user, item, demand, candidates):
-        raise NotImplementedError()

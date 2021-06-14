@@ -1,33 +1,27 @@
-import os
-import six
-import sys
-import json
-import math
 import argparse
+import os
+import sys
+
+import chainer
+import chainer.links as L
+import chainer.optimizers as O
 import matplotlib
 import numpy as np
-import collections
-import chainer.optimizers as O
-import chainer.links as L
-import chainer.initializers as I
-import chainer.functions as F
-import chainer
-from chainer.optimizer_hooks import GradientClipping
-from chainer.training import extensions, triggers, Trainer
+from chainer import training
 from chainer.backends import cuda
-from chainer import reporter, training
-from model_reader import ModelReader
-from data_iterator import (
-    SentenceIterator,
-    SentenceDynamicIterator,
-    SentimentSentenceIterator,
-    SentimentSentenceDynamicIterator,
-)
+from chainer.optimizer_hooks import GradientClipping
+from chainer.training import Trainer, extensions, triggers
+
+from data_iterator import (SentenceDynamicIterator, SentenceIterator,
+                           SentimentSentenceDynamicIterator,
+                           SentimentSentenceIterator)
 from data_loader import DataLoader
-from prepare_opinion_contextualization_data import read_and_trim_vocab, get_aspect_opinions
-from random_seed import set_random_seed
 from defs import *
+from model_reader import ModelReader
 from nn import *
+from prepare_opinion_contextualization_data import (get_aspect_opinions,
+                                                    read_and_trim_vocab)
+from random_seed import set_random_seed
 from util import *
 
 matplotlib.use("Agg")
@@ -308,18 +302,6 @@ def get_context_model(args, data_loader):
             "rasc2v",
         ]:
             model = AspectSentiContext2Vec(
-                args.gpu,
-                n_vocab,
-                n_aspect,
-                context_word_units,
-                lstm_hidden_units,
-                target_word_units,
-                loss_func,
-                True,
-                args.dropout,
-            )
-        elif args.context in ["c2vas"]:
-            model = Context2VecAspectSenti(
                 args.gpu,
                 n_vocab,
                 n_aspect,

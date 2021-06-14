@@ -1,25 +1,23 @@
-from util import array2string
+import argparse
+import csv
+import os
+import sys
+import time
+import traceback
+from collections import Counter
+
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
+from coherence_manager import (ContextualizedCoherenceManager,
+                               DummyCoherenceManager)
 from efm import EFMReader
+from explanation_generator import GreedySentenceSelector, ILPSentenceSelector
 from opinion_contextualization import OpinionContextualizer, contextualize
 from random_seed import set_random_seed
 from sentence_pair_model import TfIdfSentencePair
-from collections import Counter
-from tqdm import tqdm
-import os
-import csv
-import sys
-import time
-import argparse
-import traceback
-import pandas as pd
-import numpy as np
-import multiprocessing as mp
-from coherence_manager import DummyCoherenceManager, ContextualizedCoherenceManager
-from explanation_generator import (
-    SentenceSelector,
-    MIPSentenceSelector,
-    GreedySentenceSelector,
-)
+from util import array2string
 
 
 def parse_arguments():
@@ -53,7 +51,7 @@ def parse_arguments():
         "--strategy",
         choices=[
             "greedy-efm",
-            "mip-efm",
+            "ilp-efm",
         ],
         default="greedy-efm",
     )
@@ -162,8 +160,8 @@ def get_generator(
         return GreedySentenceSelector(
             coherence_manager, sentence_pair_model, alpha, generator_type, verbose
         )
-    elif "mip" in generator_type:
-        return MIPSentenceSelector(
+    elif "ilp" in generator_type:
+        return ILPSentenceSelector(
             coherence_manager, sentence_pair_model, alpha, verbose
         )
 

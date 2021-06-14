@@ -1,13 +1,13 @@
-import os
-import sys
 import argparse
-import numpy as np
-import pandas as pd
 import multiprocessing as mp
+import os
+
+import pandas as pd
 from tqdm import tqdm
-from util import *
+
 from defs import *
 from efm import EFMReader
+from util import *
 
 
 def parse_args():

@@ -1,9 +1,10 @@
-import pandas as pd
-import numpy as np
-import os
 import argparse
+import os
+
 import cornac
-from cornac.data import SentimentModality, Reader
+import numpy as np
+import pandas as pd
+from cornac.data import Reader, SentimentModality
 from cornac.eval_methods import BaseMethod
 
 

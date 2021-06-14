@@ -1,10 +1,12 @@
-from util import to_one_hot
-from defs import SENT_COUNTS_FILENAME, UNK_TOKEN
-from tqdm import tqdm
-import os
 import csv
 import math
+import os
+
 import numpy as np
+from tqdm import tqdm
+
+from defs import SENT_COUNTS_FILENAME, UNK_TOKEN
+from util import to_one_hot
 
 DATA_KEYS = [
     "sentences",

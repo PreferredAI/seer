@@ -1,16 +1,11 @@
-import os
 import argparse
-from sentence_pair_model import TfIdfSentencePair
 from collections import Counter
-from explanation_generation import (
-    get_corpus,
-    get_preference,
-    get_coherence_manager,
-    get_contextualizer,
-    get_generator,
-    get_candidates,
-)
-from local_search_contextualized_opinion import local_search_contextualize_opinion
+
+from explanation_generation import (get_candidates, get_contextualizer,
+                                    get_corpus, get_generator, get_preference)
+from local_search_contextualized_opinion import \
+    local_search_contextualize_opinion
+from sentence_pair_model import TfIdfSentencePair
 from util import *
 
 
@@ -34,7 +29,7 @@ def parse_arguments():
         "--strategy",
         choices=[
             "greedy-efm",
-            "mip-efm",
+            "ilp-efm",
         ],
         default="greedy-efm",
     )

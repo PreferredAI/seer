@@ -1,15 +1,13 @@
 import argparse
-from util import substitute_word, convert_str_to_list
-from explanation_generation import (
-    contextualize_candidate_sentences,
-    get_preference,
-    get_contextualizer,
-)
-from sentence_pair_model import TfIdfSentencePair
-from tqdm import tqdm
-import pandas as pd
-import numpy as np
 
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
+from explanation_generation import (contextualize_candidate_sentences,
+                                    get_contextualizer, get_preference)
+from sentence_pair_model import TfIdfSentencePair
+from util import convert_str_to_list, substitute_word
 
 summary_report = {}
 
@@ -60,7 +58,7 @@ def parse_arguments():
         type=str,
         choices=[
             "greedy-efm",
-            "mip-efm",
+            "ilp-efm",
         ],
         default="greedy-efm",
         help="Strategy",
@@ -96,7 +94,7 @@ def local_search_contextualize_opinion(
     contextualizer,
     sentence_pair_model,
     top_k=None,
-    strategy="mip-efm",
+    strategy="ilp-efm",
     verbose=False,
 ):
     local_searched_sentences = []

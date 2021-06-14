@@ -1,12 +1,10 @@
-import os
-import sys
 import argparse
+import os
+
 import pandas as pd
-import csv
-from tqdm import tqdm
-from util import save_dict, to_dict, save_count, load_count
-from collections import Counter
+
 from defs import *
+from util import save_dict, to_dict
 
 SPLITTED_INFO_FILENAME = "split.info"
 

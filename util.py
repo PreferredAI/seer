@@ -1,15 +1,15 @@
-import sys
-import gzip
-import re
-import numpy as np
-from collections import Counter
-from nltk.tokenize import word_tokenize
-from nltk.stem.porter import PorterStemmer
-from math import exp
 import csv
+import gzip
 import json
+import re
+import sys
 from ast import literal_eval
+from collections import Counter
+from math import exp
 
+import numpy as np
+from nltk.stem.porter import PorterStemmer
+from nltk.tokenize import word_tokenize
 
 OPINION_EXP = re.compile(r"(.*)<o>(.*?)</o>(.*)")
 ASPECT_EXP = re.compile(r"(.*)<f>(.*?)</f>(.*)")

@@ -1,5 +1,5 @@
-import numpy as np
 import chainer
+import numpy as np
 
 
 class SentenceIterator(chainer.dataset.Iterator):
