@@ -3,7 +3,8 @@ from collections import namedtuple
 
 import numpy as np
 
-from seer_ilp import Company, Customer, Facility, FacilityTypeDemand, solve_seer_ilp
+from seer_ilp import (Company, Customer, Facility, FacilityTypeDemand,
+                      solve_seer_ilp)
 
 Sentence = namedtuple("Sentence", ("name", "review", "aspect", "text"))
 Review = namedtuple("Review", ("name", "reviewer", "cost"))
@@ -69,6 +70,7 @@ class ILPSentenceSelector(SentenceSelector):
         coherence_manager,
         sentence_pair_model,
         alpha=1.0,
+        beta=1.0,
         strategy="ilp-efm",
         verbose=False,
     ):
@@ -76,6 +78,7 @@ class ILPSentenceSelector(SentenceSelector):
         if alpha < 0:
             raise ValueError("alpha must be >= 0")
         self.alpha = alpha
+        self.beta = beta
         self.coherence_manager = coherence_manager
         self.sentence_pair_model = sentence_pair_model
         self.strategy = strategy
@@ -176,12 +179,13 @@ class GreedySentenceSelector(ILPSentenceSelector):
         self,
         coherence_manager,
         sentence_pair_model,
-        alpha,
+        alpha=1.0,
+        beta=1.0,
         strategy="greedy",
         verbose=False,
     ):
         super().__init__(
-            coherence_manager, sentence_pair_model, alpha, strategy, verbose
+            coherence_manager, sentence_pair_model, alpha=alpha, beta=beta, strategy=strategy, verbose=verbose
         )
 
     def greedy_select_sentences(self, reviews, sentences, costs, aspect_demand):

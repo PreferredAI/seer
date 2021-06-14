@@ -29,7 +29,9 @@ def parse_arguments():
         "--strategy",
         choices=[
             "greedy-efm",
+            "greedy-mter",
             "ilp-efm",
+            "ilp-mter",
         ],
         default="greedy-efm",
     )

@@ -79,7 +79,7 @@ class ModelReader():
         if params['model_type'] == 'c2v':
             model = Context2Vec(self.gpu, n_vocab, context_word_units,
                                 lstm_hidden_units, target_word_units, loss_func, self.resume)
-        elif params['model_type'] in ['asc2v']:
+        elif params['model_type'] in ['asc2v', 'asc2v-mter']:
             model = AspectSentiContext2Vec(self.gpu, n_vocab, n_encode, context_word_units,
                                            lstm_hidden_units, target_word_units, loss_func, self.resume)
         S.load_npz(model_file, model)

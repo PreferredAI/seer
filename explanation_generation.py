@@ -132,6 +132,9 @@ def contextualize_candidate_sentences(candidates, user, contextualizer, top_k=10
 
 
 def get_preference(preference_dir, preference_type="efm", verbose=False):
+    from mter import MTERReader
+    if 'mter' in preference_type:
+        return MTERReader(preference_dir, verbose=verbose)
     return EFMReader(preference_dir, verbose=verbose)
 
 

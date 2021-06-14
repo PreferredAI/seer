@@ -6,7 +6,6 @@ import pandas as pd
 from tqdm import tqdm
 
 from defs import *
-from efm import EFMReader
 from util import *
 
 
@@ -17,19 +16,26 @@ def parse_args():
         "-o", "--out", type=str, default="data/toy", help="Ouput directory"
     )
     parser.add_argument("-efm", "--efm_dir", type=str, default="data/toy/efm")
+    parser.add_argument("-mter", "--mter_dir", type=str, default=None)
     parser.add_argument(
         "--max_sent_len", type=int, default=128, help="Max sentence length"
     )
     return parser.parse_args()
 
 
-def export_text_completion_data(profile, efm, path):
+def export_text_completion_data(profile, efm, mter=None, path='./'):
     df = profile
     df["uif"] = df[["reviewerID", "asin", "aspect"]].apply(tuple, axis=1)
     df["aspect_score_efm"] = df.apply(
         lambda row: efm.get_aspect_score(row["reviewerID"], row["asin"], row["aspect"]),
         axis=1,
     )
+    if mter:
+        df["aspect_score_mter"] = df.apply(
+            lambda row: mter.get_aspect_score(row["reviewerID"], row["asin"], row["aspect"]),
+            axis=1,
+        )
+
     df = df.drop(columns=["uif"])
     df.to_csv(path, index=False)
     print("Done export data to", path)
@@ -94,6 +100,8 @@ def get_aspect_opinions(path):
     return aspect_opinions
 
 def main(args):
+    from efm import EFMReader
+    from mter import MTERReader
     if not os.path.exists(args.out):
         os.makedirs(args.out)
 
@@ -107,17 +115,18 @@ def main(args):
     test = test[test["opinion"].isin(list(train["opinion"]))]
 
     efm = EFMReader(args.efm_dir)
+    mter = MTERReader(args.mter_dir) if args.mter_dir else None
     mp.Process(
         target=export_text_completion_data,
-        args=(test, efm, os.path.join(args.out, TEST_FILENAME)),
+        args=(test, efm, mter, os.path.join(args.out, TEST_FILENAME)),
     ).start()
     mp.Process(
         target=export_text_completion_data,
-        args=(validation, efm, os.path.join(args.out, VALIDATION_FILENAME)),
+        args=(validation, efm, mter, os.path.join(args.out, VALIDATION_FILENAME)),
     ).start()
     t1 = mp.Process(
         target=export_text_completion_data,
-        args=(train, efm, os.path.join(args.out, TRAIN_FILENAME)),
+        args=(train, efm, mter, os.path.join(args.out, TRAIN_FILENAME)),
     )
 
     t1.start()
