@@ -10,7 +10,7 @@ Presented at [IJCAI-PRICAI-20](https://ijcai20.org/)
 
 We provide:
 - Code to run SEER framework
-- [Data](https://drive.google.com/drive/folders/1DZAUJ4aO5O4SLxCFGS3MYBQhn9DlZ7qE?usp=sharing) we used for our experiments
+- [Data](https://github.com/PreferredAI/seer/tree/master/data) we used for our experiments
 
 
 If you find the code and data useful in your research, please cite:
